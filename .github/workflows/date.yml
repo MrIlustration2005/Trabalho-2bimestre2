@@ -1,0 +1,10 @@
+name: Show push datetime
+
+on: push
+
+jobs:
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mostrar data e hora do push (Brasil)
+        run: TZ="America/Sao_Paulo" date
