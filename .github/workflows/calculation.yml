@@ -1,6 +1,8 @@
 name: Calcular 2+2
 
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   calc:
