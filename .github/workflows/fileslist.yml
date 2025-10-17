@@ -1,6 +1,8 @@
 name: Show push files
 
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   show-push-files:
