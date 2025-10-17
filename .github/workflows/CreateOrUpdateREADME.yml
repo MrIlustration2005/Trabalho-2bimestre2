@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
-  contents: write  # 
+  contents: write
 
 jobs:
   create_file:
@@ -18,7 +19,7 @@ jobs:
         run: |
           echo "# Bem-vindo ao meu repositório" > README.md
           echo "Este é um arquivo README criado automaticamente por um workflow." >> README.md
-          echo "Data de criação: $(date)" >> README.md
+          echo "Data de criação: $(TZ='America/Sao_Paulo' date)" >> README.md
 
       - name: Commitar e enviar o README
         run: |
