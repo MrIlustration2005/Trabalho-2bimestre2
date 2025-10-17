@@ -1,0 +1,13 @@
+name: Show push files
+
+on: push
+
+jobs:
+  show-push-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Listar arquivos do repositório
+        run: ls 
