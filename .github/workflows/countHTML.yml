@@ -3,7 +3,7 @@ name: count HTML files
 on: push
 
 jobs:
-  show-push-files:
+  count-HTML-files:
     runs-on: ubuntu-latest
     steps:
       - name: contando arquivos HTML
