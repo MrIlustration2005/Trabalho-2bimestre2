@@ -1,0 +1,22 @@
+name: Workflow agendado
+
+on:
+  schedule:
+    # Roda todos os sábados à meia-noite (00:00 UTC)
+    - cron: '0 0 * * 6'
+  workflow_dispatch:
+
+jobs:
+  meu_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar se hoje é sábado
+        run: |
+          DIA_ATUAL=$(date +%u)  # 1=Segunda ... 7=Domingo
+          if [ "$DIA_ATUAL" -eq 6 ]; then
+            echo "✅ Hoje é sábado! Executando o job..."
+            # Seus comandos aqui
+          else
+            echo "❌ Hoje NÃO é sábado. Encerrando sem executar."
+            exit 0
+          fi
