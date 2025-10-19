@@ -1,0 +1,36 @@
+name: Alert on Large Files
+
+on:
+  pull_request:
+  workflow_dispatch:  # 👈 permite rodar manualmente via botão "Run workflow"
+
+jobs:
+  check-large-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Find and alert large files
+        run: |
+          MAX_SIZE_KB=100
+          MAX_SIZE_BYTES=$((MAX_SIZE_KB * 1024))
+
+          echo "🔍 Procurando arquivos maiores que ${MAX_SIZE_KB}KB..."
+
+          # Encontra arquivos com mais de 100KB, exceto os do .git/
+          LARGE_FILES=$(find . -type f -size +${MAX_SIZE_BYTES}c -not -path "./.git/*")
+
+          if [ -n "$LARGE_FILES" ]; then
+            echo "::warning::Arquivos maiores que ${MAX_SIZE_KB}KB encontrados:"
+            echo "$LARGE_FILES" | while read -r file; do
+              # Obtém o tamanho do arquivo em bytes e converte para KB
+              file_size=$(wc -c < "$file")
+              file_size_kb=$(echo "scale=2; $file_size / 1024" | bc)
+              echo "::warning title=Arquivo grande::O arquivo '$file' tem ${file_size_kb}KB (limite é ${MAX_SIZE_KB}KB)."
+            done
+            exit 1  # ❗ Deixe comentado se quiser apenas alertar, sem falhar
+          else
+            echo "✅ Nenhum arquivo grande encontrado. Verificação concluída com sucesso."
+          fi
