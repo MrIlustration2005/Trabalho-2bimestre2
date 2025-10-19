@@ -1,0 +1,48 @@
+name: Relatório de Commits
+
+on:
+  push:
+    branches:
+      - main # Altere se seu branch principal tiver outro nome
+  workflow_dispatch: # 👉 permite executar manualmente no GitHub Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🕒 Exibir data do commit
+        run: echo "Data do commit:$(git log -1 --format='%cd')"
+
+      - name: 👤 Exibir autor do commit
+        run: echo "Usuário:$(git log -1 --format='%an')"
+
+      - name: 📄 Contar arquivos HTML
+        id: count_html
+        run: |
+          count=$(find . -type f -name "*.html" | wc -l)
+          echo "html_count=$count" >> $GITHUB_OUTPUT
+
+      - name: 🎨 Contar arquivos CSS
+        id: count_css
+        run: |
+          count=$(find . -type f -name "*.css" | wc -l)
+          echo "css_count=$count" >> $GITHUB_OUTPUT
+
+      - name: ⚙️ Contar arquivos JS
+        id: count_js
+        run: |
+          count=$(find . -type f -name "*.js" | wc -l)
+          echo "js_count=$count" >> $GITHUB_OUTPUT
+
+      - name: 📊 Exibir relatório de arquivos
+        run: |
+          echo "Arquivos HTML enviados: ${{ steps.count_html.outputs.html_count }}"
+          echo "Arquivos CSS enviados: ${{ steps.count_css.outputs.css_count }}"
+          echo "Arquivos JS enviados: ${{ steps.count_js.outputs.js_count }}"
+
+      - name: ✅ Finalizar com sucesso
+        run: echo "Todos os passos foram concluídos!"
