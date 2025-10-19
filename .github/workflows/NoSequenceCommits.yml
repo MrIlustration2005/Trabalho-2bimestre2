@@ -1,0 +1,43 @@
+name: Relatório de Commits sem sequência 
+
+on:
+  push:
+    branches:
+      - main  # Ou o branch que você quer monitorar
+  workflow_dispatch:
+
+jobs:
+  commit_info_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Obter dados do commit
+        id: commit_data
+        run: |
+          AUTHOR=$(git log -1 --pretty=format:'%an')
+          DATE=$(git log -1 --pretty=format:'%cd')
+          echo "commit_author=$AUTHOR" >> $GITHUB_ENV
+          echo "commit_date=$DATE" >> $GITHUB_ENV
+
+      - name: Contar arquivos HTML, CSS e JS
+        id: file_count
+        run: |
+          HTML_FILES=$(find . -name "*.html" | wc -l)
+          CSS_FILES=$(find . -name "*.css" | wc -l)
+          JS_FILES=$(find . -name "*.js" | wc -l)
+          echo "html_count=$HTML_FILES" >> $GITHUB_ENV
+          echo "css_count=$CSS_FILES" >> $GITHUB_ENV
+          echo "js_count=$JS_FILES" >> $GITHUB_ENV
+
+      - name: Exibir resultados
+        run: |
+          echo "Autor do commit: ${{ env.commit_author }}"
+          echo "Data do commit: ${{ env.commit_date }}"
+          echo "-------------------------------------"
+          echo "Resumo dos arquivos enviados:"
+          echo "  - Arquivos HTML: ${{ env.html_count }}"
+          echo "  - Arquivos CSS: ${{ env.css_count }}"
+          echo "  - Arquivos JS: ${{ env.js_count }}"
