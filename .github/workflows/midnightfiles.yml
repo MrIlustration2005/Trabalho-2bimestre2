@@ -1,0 +1,20 @@
+name: Contar Arquivos Diariamente
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Executa todos os dias à meia-noite (00:00) UTC
+  workflow_dispatch: # permite executar manualmente no GitHub Actions
+
+jobs:
+  contar_arquivos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Contar arquivos no repositório
+        run: |
+          echo "Contando arquivos..."
+          TOTAL_FILES=$(git ls-files | wc -l)
+          echo "Total de arquivos no repositório: $TOTAL_FILES"
