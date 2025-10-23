@@ -1,16 +1,15 @@
 name: Agendamento Noturno
 
 on:
-  schedule:
-    # Executa a cada hora das 22h às 23h (horário de Brasília → 01h às 02h UTC)
-    - cron: '0 1-2 * * *'
-    # Executa a cada hora da meia-noite às 5h (horário de Brasília → 03h às 08h UTC)
-    - cron: '0 3-8 * * *'
   workflow_dispatch:
 
 jobs:
   exemplo-noite:
     runs-on: ubuntu-latest
+    if: |
+      (hour >= 1) && (hour <= 8) || (hour >= 22) && (hour <= 23)
+    env:
+      TZ: 'America/Sao_Paulo'
     steps:
       - name: Ação noturna
         run: |
