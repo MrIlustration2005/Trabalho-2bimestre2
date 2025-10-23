@@ -1,4 +1,4 @@
-nname: Agendamento Noturno
+name: Agendamento Noturno
 
 on:
   schedule:
