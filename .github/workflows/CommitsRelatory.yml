@@ -18,7 +18,9 @@ jobs:
         run: echo "Data do commit:$(git log -1 --format='%cd')"
 
       - name: 👤 Exibir autor do commit
-        run: echo "Usuário:$(git log -1 --format='%an')"
+        run: |
+         echo "Usuário:$(git log -1 --format='%an')"
+         echo "Autor: ${{ github.event.head_commit.author.name }} (${{ github.event.head_commit.author.email }})"
 
       - name: 📄 Contar arquivos HTML
         id: count_html
