@@ -1,18 +1,34 @@
 name: Agendamento Noturno
 
 on:
-  workflow_dispatch:
+  schedule:
+    # Executa automaticamente das 22h às 23h (horário de Brasília → 01h–02h UTC)
+    - cron: '0 1-2 * * *'
+    # Executa automaticamente da meia-noite às 5h (horário de Brasília → 03h–08h UTC)
+    - cron: '0 3-8 * * *'
+  workflow_dispatch: # Permite rodar manualmente
 
 jobs:
   exemplo-noite:
     runs-on: ubuntu-latest
-    if: |
-      (hour >= 1) && (hour <= 8) || (hour >= 22) && (hour <= 23)
-    env:
-      TZ: 'America/Sao_Paulo'
+
     steps:
-      - name: Ação noturna
+      - name: Verificar horário (somente 22h–5h de Brasília)
+        id: verificar
         run: |
-          echo "⏰ Esta ação só roda durante a noite no Brasil (22h às 5h)."
-          echo "🕐 Horário atual no Brasil: $(TZ='America/Sao_Paulo' date)"
+          HORA_BR=$(TZ='America/Sao_Paulo' date +%H)
+          echo "🕐 Hora atual no Brasil: $HORA_BR"
+          
+          # Verifica se está entre 22h (22, 23, 00, 01, 02, 03, 04, 05)
+          if [ $HORA_BR -ge 22 ] || [ $HORA_BR -lt 6 ]; then
+            echo "✅ Dentro do horário permitido (noite)."
+          else
+            echo "❌ Fora do horário permitido (22h–5h no Brasil)."
+            exit 1
+          fi
+
+      - name: Executar ação noturna
+        run: |
+          echo "🌙 Executando ação noturna..."
+          echo "🕐 Horário atual (Brasília): $(TZ='America/Sao_Paulo' date)"
           echo "🕒 Horário UTC: $(date -u)"
