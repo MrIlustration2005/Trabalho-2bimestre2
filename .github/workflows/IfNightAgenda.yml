@@ -2,8 +2,8 @@ name: Agendamento Noturno
 
 on:
   schedule:
-    # Executa automaticamente das 22h às 23h (horário de Brasília → 01h–02h UTC)
-    - cron: '0 1-2 * * *'
+    # Executa automaticamente das 19h às 23h (horário de Brasília → 22h–02h UTC)
+    - cron: '0 22-23 * * *'
     # Executa automaticamente da meia-noite às 5h (horário de Brasília → 03h–08h UTC)
     - cron: '0 3-8 * * *'
   workflow_dispatch: # Permite rodar manualmente
@@ -13,22 +13,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Verificar horário (somente 22h–5h de Brasília)
+      - name: Verificar horário (somente 19h–5h de Brasília)
         id: verificar
         run: |
           HORA_BR=$(TZ='America/Sao_Paulo' date +%H)
           echo "🕐 Hora atual no Brasil: $HORA_BR"
           
-          # Verifica se está entre 22h (22, 23, 00, 01, 02, 03, 04, 05)
-          if [ $HORA_BR -ge 22 ] || [ $HORA_BR -lt 6 ]; then
-            echo "✅ Dentro do horário permitido (noite)."
+          # Verifica se está entre 19h e 5h
+          if [ $HORA_BR -ge 19 ] || [ $HORA_BR -lt 6 ]; then
+            echo "✅ Dentro do horário permitido (19h–5h no Brasil)."
+            echo "executar=true" >> $GITHUB_OUTPUT
           else
-            echo "❌ Fora do horário permitido (22h–5h no Brasil)."
-            exit 1
+            echo "⚠️ Aviso: fora do horário permitido (19h–5h no Brasil)."
+            echo "executar=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Executar ação noturna
+        if: steps.verificar.outputs.executar == 'true'
         run: |
           echo "🌙 Executando ação noturna..."
           echo "🕐 Horário atual (Brasília): $(TZ='America/Sao_Paulo' date)"
           echo "🕒 Horário UTC: $(date -u)"
+
+      - name: Ignorar execução (fora do horário)
+        if: steps.verificar.outputs.executar == 'false'
+        run: echo "⏸️ Execução ignorada, pois não é horário noturno."
